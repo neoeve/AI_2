@@ -10,6 +10,21 @@ print_board([]).
 print_board([H|T]) :-
     atomic_list_concat(H,' ',Hconcat),
     write(Hconcat),nl,print_board(T).
+%c)
+valid_move(X,Y,Board):-
+    line(Y,X,Board,Value),
+    Value == 0.
+
+line(NColumn,0,[H|_],Value):-
+    column(NColumn,H,Value).
+line(NColumn,NLine,[_|T],Line):-
+    Y is NLine-1,
+    line(NColumn,Y,T,Line).
+
+column(0,[H|_],H).
+column(NColumn,[_|T],Column):-
+    Y is NColumn-1,
+    column(Y,T,Column).
 
 %d)
 add_move(Player,X,Y,InitialBoard,FinalBoard) :-
@@ -23,29 +38,12 @@ replace(Position,Input,Value,Output) :-
     nth0(Position,Output,Value,Other).
 
 %e)
-generate_move(_,[],[]).
-generate_move(Player,[H|T],[FinalLine|FinalBoard]) :-
-    write('Header: '),
-    write(H),nl,
-    findall(X0,(select(0, H, Player, X0)),FinalLine),
-    write('Results:'),
-    write(FinalLine),nl,
-    join_results(FinalLine,T,FinalBoard),
-    write('exit'),nl,
-    write(FinalBoard),nl,
-    generate_move(Player,T,FinalBoard).
-
-
-%juntar cada resultado na lista final
-join_results([],[],[]).
-join_results([H|T],LeftOvers,FinalBoard) :-
-    write('join'),nl,
-    write(H),nl,
-    write(T),nl,
-    write(LeftOvers),nl,
-    append([H],LeftOvers,FinalBoard),
-    write(FinalBoard),nl.
-    %join_results(T,LeftOvers,FinalBoard).
+generate_move(Player,[H|T],FinalBoard):-
+    length(H,LenY),
+    between(0,LenY,Y),
+    length([H|T],LenX),
+    between(0,LenX,X),
+    add_move(Player,X,Y,[H|T],FinalBoard).
 
 %f)
 % condições de game_over
